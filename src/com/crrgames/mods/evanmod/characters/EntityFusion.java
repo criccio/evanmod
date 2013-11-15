@@ -4,37 +4,38 @@ import com.crrgames.mods.evanmod.util.ModStrings;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityOwnable;
-import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 //The class for the fusion itself. we want to extend iron golem so we get alot of stuff for free, and only focus on
-// determining our wool golem exists
-public abstract class EntityFusion extends EntityIronGolem implements EntityOwnable {
-
-    private EntityFusionStats _stats;
+// determining our wool golem exists - each fusion needs to extend this class and implement getStats()
+public class EntityFusion extends EntityIronGolem implements EntityOwnable {
 
     private String creator;
 
-    public EntityFusion(World world, EntityFusionStats stats) {
+    public EntityFusion(World world)
+    {
         super(world);
-        this._stats = stats;
-        this.setHealth(_stats.getMaxHealth());
+    }
+
+    public EntityFusionStats getStats()
+    {
+        return new EntityFusionStats("default");
     }
 
     public ResourceLocation getTexture()
     {
-        return new ResourceLocation(ModStrings.ModID + ":textures/mob/" + _stats.getName() + ".png");
+        return new ResourceLocation(ModStrings.ModID + ":textures/mob/" + getStats().getName() + ".png");
+
     }
 
     @Override
     public void dropFewItems(boolean recentlyHit, int lootingLevel) {
         //drop only the items we want, not the iron golem items
-        for (ItemStack is : _stats.getDroppedItems()) {
+        for (ItemStack is : getStats().getDroppedItems()) {
             entityDropItem(is.copy(), 0F);
         }
     }
@@ -136,11 +137,10 @@ public abstract class EntityFusion extends EntityIronGolem implements EntityOwna
     }
 
     private static EntityFusion detectCharacter(World world, int lowerBody, int upperBody, int leftArm, int rightArm) {
-        EntityFusionStats stats = EntityFusionRegistry.checkRecipe(lowerBody, upperBody, leftArm, rightArm);
-        if (stats != null) {
+        Class<? extends EntityFusion> clazz = EntityFusionRegistry.checkRecipe(lowerBody, upperBody, leftArm, rightArm);
+        if (clazz != null) {
             try {
-                return EntityFusion.class.getConstructor(World.class, EntityFusionStats.class)
-                        .newInstance(world, stats);
+                return clazz.getConstructor(World.class).newInstance(world);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -2,6 +2,7 @@ package com.crrgames.mods.evanmod;
 
 import com.crrgames.mods.evanmod.blocks.NanoBlock;
 import com.crrgames.mods.evanmod.characters.EntityFusionRegistry;
+import com.crrgames.mods.evanmod.characters.fusions.EntityFusionDexter;
 import com.crrgames.mods.evanmod.util.ModStrings;
 import com.crrgames.mods.evanmod.util.WoolColor;
 import cpw.mods.fml.common.Mod;
@@ -52,7 +53,7 @@ public class EvanMod {
     private void registerFusions()
     {
         //name, lowerBody, rightArm, leftArm, upperBody
-        EntityFusionRegistry.registerFusion("dexter", WoolColor.White, WoolColor.White, WoolColor.White, WoolColor.Black);
+        EntityFusionRegistry.registerFusion("dexter", WoolColor.White, WoolColor.White, WoolColor.White, WoolColor.Black, EntityFusionDexter.class);
         //TODO: add remaining fusions
     }
 }
